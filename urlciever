@@ -1,0 +1,38 @@
+import os
+import sys
+import json
+import requests
+import numpy as np
+import pandas as pd
+from datetime import datetime
+
+def get_data(url):
+    response = requests.get(url)
+    data = json.loads(response.text)
+    return data
+
+def process_data(data):
+    df = pd.DataFrame(data)
+    df['timestamp'] = pd.to_datetime(df['timestamp'])
+    df = df.set_index('timestamp')
+    return df
+
+def analyze_data(df):
+    mean = df['value'].mean()
+    std = df['value'].std()
+    return mean, std
+
+def save_results(mean, std):
+    with open('results.txt', 'w') as f:
+        f.write(f'Mean: {mean}\nStandard deviation: {std}')
+
+def main():
+    url = 'https://example.com/data.json'
+    data = get_data(url)
+    df = process_data(data)
+    mean, std = analyze_data(df)
+    save_results(mean, std)
+    print(f'Mean: {mean}\nStandard deviation: {std}')
+
+if __name__ == '__main__':
+    main()
